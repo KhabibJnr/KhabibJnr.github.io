@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brian Mbuthi | Academic Researcher & Quantitative Analyst</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bgMain: '#f8fafc',
+                        bgSecondary: '#f1f5f9',
+                        borderLight: '#cbd5e1',
+                        borderDark: '#94a3b8',
+                        textPrimary: '#0f172a',
+                        textSecondary: '#334155',
+                        textMuted: '#64748b',
+                        accentBlue: '#0284c7',
+                        accentTeal: '#0d9488',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Chart.js CDN for Interactive Data Sandbox -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Minimal hover underlines for editorial feel */
+        .link-underline {
+            position: relative;
+            text-decoration: none;
+        }
+        .link-underline::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #0284c7;
+            transition: width 0.3s ease;
+        }
+        .link-underline:hover::after {
+            width: 100%;
+        }
+
+        /* Edit mode highlighting */
+        .edit-active [data-editable] {
+            outline: 2px dashed #0284c7 !important;
+            outline-offset: 4px;
+            cursor: pointer;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-800 bg-slate-50 selection:bg-sky-200 selection:text-slate-900">
+
+    <!-- FLOATING ADMIN / LIVE CONTENT EDITOR TOGGLE -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        <div id="editor-status-toast" class="hidden bg-slate-900 text-white px-4 py-2 rounded text-xs font-mono border border-slate-700 shadow-2xl">
+            Admin Edit Mode Enabled - Click text to edit
+        </div>
+        <button id="toggle-editor-btn" onclick="toggleEditMode()" class="p-3 rounded-full bg-slate-900 text-slate-100 shadow-xl hover:bg-slate-800 transition-all">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+        </button>
+        <button id="export-config-btn" onclick="exportConfig()" class="hidden p-2.5 rounded bg-sky-700 text-white font-semibold text-xs shadow-md hover:bg-sky-800 transition-all flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i> Export JSON
+        </button>
+    </div>
+
+    <!-- MAIN NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 bg-slate-100/90 backdrop-blur-md border-b border-slate-300">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3">
+                <div>
+                    <span class="font-heading font-bold text-xl text-slate-900 block" data-editable="personalName">Brian Mbuthi</span>
+                    <span class="block text-xs font-mono text-slate-600">BSc Math • Quantitative Researcher & Academic Writer</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 font-medium text-sm text-slate-700">
+                <a href="#about" class="hover:text-sky-700 transition-colors">About</a>
+                <a href="#expertise" class="hover:text-sky-700 transition-colors">Expertise</a>
+                <a href="#portfolio" class="hover:text-sky-700 transition-colors">Portfolio & Publications</a>
+                <a href="#sandbox" class="hover:text-sky-700 transition-colors">Data Sandbox</a>
+                <a href="#timeline" class="hover:text-sky-700 transition-colors">Experience</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <button onclick="toggleLanguage()" id="lang-toggle-btn" class="px-3 py-1.5 rounded text-xs font-mono border border-slate-400 text-slate-700 hover:bg-slate-200 transition-all">
+                    Swahili View
+                </button>
+                <button onclick="openResumeModal()" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-semibold border border-slate-400 transition-all">
+                    <i data-lucide="file-text" class="w-4 h-4 text-sky-700"></i> Full CV
+                </button>
+                <a href="#contact" class="px-4 py-2 rounded bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-all">
+                    Contact
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10">
+
+        <!-- BILINGUAL BANNER -->
+        <div id="bilingual-banner" class="bg-slate-200 border-b border-slate-300 py-2 px-6 text-xs font-mono text-slate-700 text-center">
+            <span id="lang-text">Welcome! Mambo vipi! Multilingual Academic & Quantitative Research Portfolio — English & Swahili</span>
+        </div>
+
+        <!-- HERO SECTION -->
+        <section class="max-w-6xl mx-auto px-6 pt-16 pb-20 border-b border-slate-300">
+            <div class="text-xs font-mono text-sky-800 tracking-wider uppercase mb-4" data-editable="heroBadge">
+                Academic Ghostwriter • Quantitative Analyst • Educator
+            </div>
+
+            <h1 class="font-heading font-extrabold text-4xl sm:text-6xl text-slate-900 leading-tight max-w-4xl tracking-tight mb-8" data-editable="heroHeading">
+                Synthesizing Mathematics, Empirical Research & Multilingual Analysis.
+            </h1>
+
+            <p class="text-slate-700 text-base sm:text-lg max-w-3xl leading-relaxed mb-10 font-normal" data-editable="heroSubtext">
+                Specialized in mathematical thermal dynamics, multivariate regression, clinical evaluation frameworks, and healthcare economic analysis. Delivering structured academic literature, statistical models (SPSS, SAS, Excel), and multilingual translation from Kenya to global academia.
+            </p>
+
+            <div class="flex flex-wrap items-center gap-6 mb-16">
+                <a href="#portfolio" class="px-6 py-3 rounded bg-slate-900 text-white font-semibold text-sm hover:bg-slate-800 transition-all flex items-center gap-2">
+                    View Published Works & Projects <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+                <a href="#sandbox" class="px-6 py-3 rounded bg-slate-200 text-slate-800 font-semibold text-sm hover:bg-slate-300 transition-all flex items-center gap-2 border border-slate-400">
+                    <i data-lucide="line-chart" class="w-4 h-4 text-teal-700"></i> Interactive Math Widget
+                </a>
+            </div>
+
+            <!-- Key Metrics Banner (Flat Minimal Grid) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-slate-300">
+                <div>
+                    <div class="text-3xl font-heading font-extrabold text-slate-900 mb-1" data-editable="stat1Num">500+</div>
+                    <div class="text-xs text-slate-600 font-medium" data-editable="stat1Label">Academic Manuscripts & Reports</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-heading font-extrabold text-slate-900 mb-1" data-editable="stat2Num">BSc</div>
+                    <div class="text-xs text-slate-600 font-medium" data-editable="stat2Label">Mathematics (Chuka University)</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-heading font-extrabold text-slate-900 mb-1" data-editable="stat3Num">4 Languages</div>
+                    <div class="text-xs text-slate-600 font-medium" data-editable="stat3Label">English, Swahili, German, French</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-heading font-extrabold text-slate-900 mb-1" data-editable="stat4Num">4+ Years</div>
+                    <div class="text-xs text-slate-600 font-medium" data-editable="stat4Label">Research & Consulting Experience</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABOUT & BIOGRAPHY SECTION -->
+        <section id="about" class="max-w-6xl mx-auto px-6 py-20 border-b border-slate-300">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                
+                <div class="md:col-span-4 space-y-4 border-r border-slate-300 pr-8">
+                    <div class="text-xs font-mono text-teal-800 uppercase tracking-widest">
+                        Profile & Contact
+                    </div>
+                    <h3 class="font-heading font-bold text-2xl text-slate-900" data-editable="profileCardTitle">Brian Mbuthi Njenga</h3>
+                    <p class="text-xs text-slate-600 font-mono" data-editable="profileCardSub">Quantitative Analyst & Academic Specialist</p>
+                    
+                    <div class="pt-4 border-t border-slate-300 space-y-3 text-xs text-slate-700">
+                        <div><strong class="text-slate-900">Location:</strong> Limuru / Nairobi, Kenya</div>
+                        <div><strong class="text-slate-900">Email:</strong> mbuthibrian2@gmail.com</div>
+                        <div><strong class="text-slate-900">Education:</strong> BSc Mathematics (Chuka University), BSc Finance (SNHU - In Progress)</div>
+                        <div><strong class="text-slate-900">Certifications:</strong> Goethe-Zertifikat (German), DELF/DALF (French)</div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-8 space-y-6">
+                    <div class="text-xs font-mono text-sky-800 uppercase tracking-widest">
+                        Academic Biography
+                    </div>
+                    <h2 class="font-heading font-bold text-3xl text-slate-900" data-editable="aboutHeading">
+                        Bridging Mathematical Analysis with Scientific Precision.
+                    </h2>
+                    <p class="text-slate-700 text-base leading-relaxed" data-editable="aboutBody1">
+                        Holding a Bachelor of Science in Mathematics from Chuka University (Second Class Honours, Upper Division) and currently pursuing a BSc in Business Administration (Finance) at Southern New Hampshire University, I combine analytical rigor with clear academic expression.
+                    </p>
+                    <p class="text-slate-700 text-base leading-relaxed" data-editable="aboutBody2">
+                        My expertise spans differential calculus modeling, multivariate statistical analysis (SPSS, PSPP, SAS), psychiatric case study synthesis, behavior intervention planning (ABA), and healthcare economic evaluations. I have authored and edited hundreds of high-stakes papers across Course Hero, EssayPro, and Atlantic Book Writers, adhering strictly to APA 7th, MLA, and Chicago citation standards.
+                    </p>
+
+                    <div class="pt-6 border-t border-slate-300">
+                        <span class="text-xs font-mono text-slate-600 block mb-3 uppercase">Language Competencies</span>
+                        <div class="flex flex-wrap gap-4 text-xs font-medium text-slate-800">
+                            <span class="pb-1 border-b-2 border-sky-700">English (Fluent)</span>
+                            <span class="pb-1 border-b-2 border-teal-700">Swahili (Native)</span>
+                            <span class="pb-1 border-b-2 border-slate-600">German (Goethe-Institut Certified)</span>
+                            <span class="pb-1 border-b-2 border-slate-600">French (DELF/DALF Certified)</span>
+                            <span class="pb-1 border-b-2 border-slate-600">Gikuyu / Kikuyu Translation</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- EXPERTISE & TECHNICAL STACK -->
+        <section id="expertise" class="max-w-6xl mx-auto px-6 py-20 border-b border-slate-300">
+            <div class="mb-12">
+                <span class="text-xs font-mono text-sky-800 uppercase tracking-widest block mb-2">Technical Capabilities</span>
+                <h2 class="font-heading font-bold text-3xl text-slate-900">Core Expertise & Methods</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                
+                <!-- Column 1 -->
+                <div class="space-y-4">
+                    <div class="text-xs font-mono text-sky-700 font-bold uppercase">01 / Mathematics & Modeling</div>
+                    <h3 class="font-heading font-bold text-xl text-slate-900" data-editable="exp1Title">Quantitative Data & Calculus</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed" data-editable="exp1Desc">
+                        Differential equations, exponential decay modeling, regression analysis, hypothesis testing, and LaTeX typesetting.
+                    </p>
+                    <div class="pt-2 text-xs font-mono text-slate-600 space-y-1">
+                        <div>• SPSS & PSPP Analytics</div>
+                        <div>• Thermal & Differential Models</div>
+                        <div>• Financial DCF Models</div>
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="space-y-4">
+                    <div class="text-xs font-mono text-teal-700 font-bold uppercase">02 / Clinical & Social Sciences</div>
+                    <h3 class="font-heading font-bold text-xl text-slate-900" data-editable="exp2Title">Healthcare & Behavior Synthesis</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed" data-editable="exp2Desc">
+                        Psychiatric evaluation protocols (DSM-5-TR), Behavior Intervention Plans (FCT, High-p request sequences), and health economics.
+                    </p>
+                    <div class="pt-2 text-xs font-mono text-slate-600 space-y-1">
+                        <div>• Psychiatric Evaluations (F20.9)</div>
+                        <div>• Applied Behavior Analysis (ABA)</div>
+                        <div>• Health Insurance Access Disparities</div>
+                    </div>
+                </div>
+
+                <!-- Column 3 -->
+                <div class="space-y-4">
+                    <div class="text-xs font-mono text-slate-700 font-bold uppercase">03 / Scholarly Publishing</div>
+                    <h3 class="font-heading font-bold text-xl text-slate-900" data-editable="exp3Title">Research & Literature Synthesis</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed" data-editable="exp3Desc">
+                        Archival research, historical narrative analysis, multi-chapter ghostwriting, and rigorous citation compliance.
+                    </p>
+                    <div class="pt-2 text-xs font-mono text-slate-600 space-y-1">
+                        <div>• APA 7th, MLA, Chicago Formatting</div>
+                        <div>• Primary Document Archival Analysis</div>
+                        <div>• Multilingual Translation & AI Eval</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- INTERACTIVE DEMO SANDBOX (CALCULUS / QUANTITATIVE CALCULATOR) -->
+        <section id="sandbox" class="max-w-6xl mx-auto px-6 py-20 border-b border-slate-300">
+            <div class="mb-8">
+                <div class="text-xs font-mono text-sky-800 uppercase tracking-widest mb-2">Interactive Calculation Engine</div>
+                <h2 class="font-heading font-bold text-3xl text-slate-900">Thermal Dynamics & Exponential Growth Model</h2>
+                <p class="text-slate-700 text-sm mt-2 max-w-2xl">
+                    Demonstrating calculus modeling applied to thermal kinetics $T(t) = T_{max} - (T_{max} - T_0)e^{-kt}$ (from the Smart Kettle Calculus Project) alongside financial capital accumulation.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                
+                <div class="lg:col-span-5 space-y-6 bg-slate-100 p-6 rounded border border-slate-300">
+                    <h3 class="font-heading font-bold text-lg text-slate-900">Simulation Controls</h3>
+
+                    <div class="space-y-4 text-xs font-mono text-slate-800">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Initial Value / Temp ($T_0$ / Base):</span>
+                                <span id="capital-val">20</span>
+                            </div>
+                            <input type="range" id="capital-slider" min="0" max="100" step="5" value="20" class="w-full accent-sky-700 cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Rate Constant / Interest ($k$ / r%):</span>
+                                <span id="rate-val">0.20</span>
+                            </div>
+                            <input type="range" id="rate-slider" min="0.05" max="0.50" step="0.01" value="0.20" class="w-full accent-teal-700 cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span>Time Horizon ($t$ minutes/years):</span>
+                                <span id="years-val">10</span>
+                            </div>
+                            <input type="range" id="years-slider" min="1" max="25" step="1" value="10" class="w-full accent-slate-800 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white border border-slate-300 text-xs font-mono space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">Calculated State $T(t)$:</span>
+                            <span id="final-result" class="font-bold text-sky-800">89.17 units</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-600">Instantaneous Rate $T'(t)$:</span>
+                            <span id="rate-result" class="font-bold text-teal-800">2.16 units/min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 bg-white p-6 rounded border border-slate-300">
+                    <div class="flex items-center justify-between mb-4 text-xs font-mono text-slate-600">
+                        <span>Curve Dynamics Plot</span>
+                        <span>$T(t) = 100 - 80e^{-0.2t}$</span>
+                    </div>
+                    <div class="h-64 w-full">
+                        <canvas id="sandboxChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PORTFOLIO PROJECTS WITH FILTER -->
+        <section id="portfolio" class="max-w-6xl mx-auto px-6 py-20 border-b border-slate-300">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                <div>
+                    <span class="text-xs font-mono text-sky-800 uppercase tracking-widest block mb-2">Curated Research & Publications</span>
+                    <h2 class="font-heading font-bold text-3xl text-slate-900">Featured Manuscripts & Works</h2>
+                </div>
+
+                <!-- Filter Buttons -->
+                <div class="flex flex-wrap gap-2 mt-6 md:mt-0 font-medium text-xs">
+                    <button onclick="filterPortfolio('all')" class="port-filter-btn active px-3 py-1.5 rounded bg-slate-900 text-white transition-all" data-cat="all">All</button>
+                    <button onclick="filterPortfolio('math')" class="port-filter-btn px-3 py-1.5 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 transition-all" data-cat="math">Mathematics & Modeling</button>
+                    <button onclick="filterPortfolio('clinical')" class="port-filter-btn px-3 py-1.5 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 transition-all" data-cat="clinical">Clinical & Behavior</button>
+                    <button onclick="filterPortfolio('health')" class="port-filter-btn px-3 py-1.5 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 transition-all" data-cat="health">Health Economics</button>
+                    <button onclick="filterPortfolio('history')" class="port-filter-btn px-3 py-1.5 rounded bg-slate-200 text-slate-700 hover:bg-slate-300 transition-all" data-cat="history">History & Archival</button>
+                </div>
+            </div>
+
+            <!-- Portfolio Grid (Flat Editorial Layout) -->
+            <div id="portfolio-grid" class="space-y-10">
+                
+                <!-- Sample 1: Calculus -->
+                <div class="portfolio-card border-b border-slate-300 pb-8 grid grid-cols-1 md:grid-cols-12 gap-6" data-category="math">
+                    <div class="md:col-span-3 text-xs font-mono text-slate-500">
+                        Calculus & Applied Physics
+                        <div class="mt-1 text-slate-900 font-semibold">Calculus 1 Model</div>
+                    </div>
+                    <div class="md:col-span-9 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-900">
+                            Using Calculus to Model the Thermal Dynamics of a Smart Electric Kettle
+                        </h3>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            Applied Newton's Law of Heating and differential equations $T(t) = 100 - 80e^{-0.2t}$ to analyze water temperature transitions and instantaneous rate of heat transfer $T'(t) = 16e^{-0.2t}$. Calculated horizontal asymptotes as $t \to \infty$ to inform smart controller energy optimization algorithms.
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-sky-800">
+                            Keywords: First-Order ODEs, Instantaneous Rate of Change, Chain Rule, Asymptotes
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 2: Healthcare Economics -->
+                <div class="portfolio-card border-b border-slate-300 pb-8 grid grid-cols-1 md:grid-cols-12 gap-6" data-category="health">
+                    <div class="md:col-span-3 text-xs font-mono text-slate-500">
+                        Healthcare Delivery & Policy
+                        <div class="mt-1 text-slate-900 font-semibold">May 2026 Evaluation</div>
+                    </div>
+                    <div class="md:col-span-9 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-900">
+                            The Impact of Health Insurance Status on Healthcare Delivery: Access Disparities, Management Frameworks, and Clinical Outcomes
+                        </h3>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            Evaluated access disparities across private vs. public coverage using cross-sectional datasets ($n=384$). Identified appointment wait time gaps (36.8 days for Medicaid vs. 32.4 days for private insurance) and analyzed cost-related barriers leading to 70% non-care reporting among uninsured populations.
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-sky-800">
+                            Keywords: Health Policy, Wait Time Disparities, Primary Care Shift, Quantitative Synthesis
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 3: Psychiatric Evaluation -->
+                <div class="portfolio-card border-b border-slate-300 pb-8 grid grid-cols-1 md:grid-cols-12 gap-6" data-category="clinical">
+                    <div class="md:col-span-3 text-xs font-mono text-slate-500">
+                        Psychiatric Evaluation
+                        <div class="mt-1 text-slate-900 font-semibold">DSM-5-TR Evaluation</div>
+                    </div>
+                    <div class="md:col-span-9 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-900">
+                            Comprehensive Psychiatric Evaluation & Psychotherapy Note: First-Episode Schizophrenia
+                        </h3>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            Formulated a comprehensive clinical SOAP assessment for a 24-year-old male presenting with persecutory delusions and auditory hallucinations. Established differential diagnoses excluding schizoaffective and substance-induced disorders, establishing a treatment plan with Risperidone 1mg BID, CBT-p, and Nicotine Replacement Therapy.
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-sky-800">
+                            Keywords: DSM-5-TR, Schizophrenia (F20.9), BPRS Assessment, Pharmacotherapy, CBT-p
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 4: ABA Plan -->
+                <div class="portfolio-card border-b border-slate-300 pb-8 grid grid-cols-1 md:grid-cols-12 gap-6" data-category="clinical">
+                    <div class="md:col-span-3 text-xs font-mono text-slate-500">
+                        Applied Behavior Analysis
+                        <div class="mt-1 text-slate-900 font-semibold">Behavior Plan (BIP)</div>
+                    </div>
+                    <div class="md:col-span-9 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-900">
+                            Behavior Intervention Plan: Functional Communication & Compliance in ASD
+                        </h3>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            Designed a proactive behavior intervention plan targeting non-compliance and physical aggression in a preschool setting. Integrated High-Probability (high-$p$) request sequences, Functional Communication Training (FCT), and Differential Reinforcement of Alternative Behavior (DRA) to replace escape-maintained behaviors.
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-sky-800">
+                            Keywords: ABA, Autism Spectrum Disorder, High-p Sequences, FCT, Treatment Integrity
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 5: Oregon Trail -->
+                <div class="portfolio-card border-b border-slate-300 pb-8 grid grid-cols-1 md:grid-cols-12 gap-6" data-category="history">
+                    <div class="md:col-span-3 text-xs font-mono text-slate-500">
+                        Archival History Analysis
+                        <div class="mt-1 text-slate-900 font-semibold">Primary Source Study</div>
+                    </div>
+                    <div class="md:col-span-9 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-900">
+                            The Trials and Communal Resilience of the 1844 Oregon Trail
+                        </h3>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            Analyzed primary source journal accounts from Catherine Sager Pringle (1844) to evaluate hardship, illness ("camp fever"), ox team maneuvering, and communal adoption frameworks formed by emigrant trains following parental deaths along the Oregon Trail.
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-sky-800">
+                            Keywords: Primary Source Critique, 1844 Oregon Trail, Archival Analysis, Communal Aid
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample 6: IRDF Pilot Outcomes -->
+                <div class="portfolio-card border-b border-slate-300 pb-8 grid grid-cols-1 md:grid-cols-12 gap-6" data-category="health">
+                    <div class="md:col-span-3 text-xs font-mono text-slate-500">
+                        Correctional Health Data
+                        <div class="mt-1 text-slate-900 font-semibold">Evidence-Based Pilot</div>
+                    </div>
+                    <div class="md:col-span-9 space-y-2">
+                        <h3 class="font-heading font-bold text-xl text-slate-900">
+                            IRDF Prototype: Evidence-Based Pilot Outcomes & Incarceration Care Costs
+                        </h3>
+                        <p class="text-slate-700 text-sm leading-relaxed">
+                            Synthesized pilot metrics across jurisdictions (Chester PA spatial normalization, Michigan DOC vocational villages yielding 6.5% lower recidivism). Formulated cost breakdowns of direct care expenditures ($14.6B Healthcare, $7.9B Public Defense out of $34.3B total direct care).
+                        </p>
+                        <div class="pt-2 text-xs font-mono text-sky-800">
+                            Keywords: Correctional Care, Direct Costs Analysis, Recidivism Metrics, Spatial Normalization
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TIMELINE / CAREER & EDUCATION -->
+        <section id="timeline" class="max-w-6xl mx-auto px-6 py-20 border-b border-slate-300">
+            <div class="mb-12">
+                <span class="text-xs font-mono text-teal-800 uppercase tracking-widest block mb-2">Background & Milestones</span>
+                <h2 class="font-heading font-bold text-3xl text-slate-900">Education & Professional Experience</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                
+                <!-- Column 1: Education -->
+                <div class="space-y-6">
+                    <h3 class="font-heading font-bold text-xl text-slate-900 border-b border-slate-300 pb-2">
+                        Academic Degrees & Qualifications
+                    </h3>
+
+                    <div class="space-y-6 text-sm">
+                        <div>
+                            <div class="text-xs font-mono text-sky-800">In Progress</div>
+                            <h4 class="font-bold text-slate-900">BSc in Business Administration (Finance Specialization)</h4>
+                            <p class="text-xs text-slate-600">Southern New Hampshire University (SNHU)</p>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-mono text-slate-500">2016 – 2021</div>
+                            <h4 class="font-bold text-slate-900">BSc in Mathematics / Analytical Mathematics</h4>
+                            <p class="text-xs text-slate-600">Chuka University — Second Class Honours (Upper Division)</p>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-mono text-slate-500">Secondary Education</div>
+                            <h4 class="font-bold text-slate-900">KCSE Secondary School Certificate</h4>
+                            <p class="text-xs text-slate-600">Kairi High School, Thika — Mean Grade: B</p>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-mono text-teal-800">Certified</div>
+                            <h4 class="font-bold text-slate-900">Diplomas in German & French</h4>
+                            <p class="text-xs text-slate-600">Goethe-Institut & DELF / DALF Accredited</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Experience -->
+                <div class="space-y-6">
+                    <h3 class="font-heading font-bold text-xl text-slate-900 border-b border-slate-300 pb-2">
+                        Employment & Professional Roles
+                    </h3>
+
+                    <div class="space-y-6 text-sm">
+                        <div>
+                            <div class="text-xs font-mono text-teal-800">2021 – Present</div>
+                            <h4 class="font-bold text-slate-900">Independent Author & Quantitative Researcher</h4>
+                            <p class="text-xs text-slate-600">Academia.edu • 50+ Indexed Publications</p>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-mono text-slate-500">Oct 2021 – Present</div>
+                            <h4 class="font-bold text-slate-900">Academic & Content Ghostwriter</h4>
+                            <p class="text-xs text-slate-600">Course Hero & EssayPro (Freelance) • 500+ Manuscripts</p>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-mono text-slate-500">2023 – 2025</div>
+                            <h4 class="font-bold text-slate-900">Academic Writer & Researcher</h4>
+                            <p class="text-xs text-slate-600">Atlantic Book Writers • 10+ Completed Manuscripts</p>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-mono text-slate-500">2019 – 2022</div>
+                            <h4 class="font-bold text-slate-900">Senior Teacher & Paraeducator</h4>
+                            <p class="text-xs text-slate-600">Bright Academy, King's Junior, Norwalk-La Mirada</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="contact" class="max-w-6xl mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                
+                <div class="md:col-span-5 space-y-4">
+                    <span class="text-xs font-mono text-sky-800 uppercase tracking-widest block">Inquiries & Collaboration</span>
+                    <h2 class="font-heading font-bold text-3xl text-slate-900">Get in Touch</h2>
+                    <p class="text-slate-700 text-sm leading-relaxed">
+                        For research inquiries, mathematical modeling assignments, statistical analysis (SPSS/SAS), or translation projects, please send a message directly.
+                    </p>
+
+                    <div class="pt-4 text-xs font-mono text-slate-700 space-y-2">
+                        <div><strong>Direct Email:</strong> mbuthibrian2@gmail.com</div>
+                        <div><strong>Phone:</strong> +254-791-372-851</div>
+                        <div><strong>Location:</strong> Limuru / Nairobi, Kenya</div>
+                        <div><strong>Portfolio URL:</strong> khabibjnr.github.io</div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-7">
+                    <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-4 bg-slate-100 p-6 rounded border border-slate-300">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-mono text-slate-700 mb-1">Name</label>
+                                <input type="text" required placeholder="Dr. Jane Doe" class="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-sky-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-mono text-slate-700 mb-1">Email</label>
+                                <input type="email" required placeholder="jane@university.edu" class="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-sky-700">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono text-slate-700 mb-1">Subject Area</label>
+                            <select class="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-sky-700">
+                                <option>Quantitative & Calculus Modeling</option>
+                                <option>Academic Research / Ghostwriting</option>
+                                <option>Healthcare & Psychiatric Evaluation Synthesis</option>
+                                <option>Multilingual Translation / AI Evaluation</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-mono text-slate-700 mb-1">Project Details</label>
+                            <textarea rows="4" required placeholder="Outline project details, deadlines, and formatting requirements..." class="w-full bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-sky-700"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-slate-900 text-white font-semibold text-sm rounded hover:bg-slate-800 transition-all">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-300 bg-slate-100 py-8">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-600 font-mono">
+            <div>© 2026 Brian Mbuthi Njenga. All rights reserved.</div>
+            <div>BSc Mathematics (Chuka University) • Academic Researcher</div>
+        </div>
+    </footer>
+
+    <!-- RESUME MODAL -->
+    <div id="resume-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white max-w-3xl w-full max-h-[90vh] rounded p-8 overflow-y-auto relative border border-slate-400">
+            <button onclick="closeResumeModal()" class="absolute top-6 right-6 text-slate-600 hover:text-slate-900">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            
+            <div class="border-b border-slate-300 pb-4 mb-6">
+                <h2 class="font-heading font-bold text-2xl text-slate-900">Curriculum Vitae</h2>
+                <p class="text-xs font-mono text-slate-600">Brian Mbuthi Njenga • mbuthibrian2@gmail.com • +254-791-372-851</p>
+            </div>
+
+            <div class="space-y-6 text-xs text-slate-700 leading-relaxed">
+                <div>
+                    <h4 class="font-bold text-slate-900 text-sm mb-2 uppercase font-mono border-b border-slate-200 pb-1">Profile Summary</h4>
+                    <p>Analytical and versatile freelance academic writer and quantitative researcher with a strong background in analytical mathematics (BSc). Experienced in crafting rigorous research papers, statistical assignments, technical reports, and multidisciplinary literature syntheses. Skilled at translating complex data modeling and statistical analyses (SPSS, SAS, Excel) into publication-ready deliverables.</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 text-sm mb-2 uppercase font-mono border-b border-slate-200 pb-1">Education History</h4>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>BSc in Business Administration (Finance)</strong> – Southern New Hampshire University (SNHU - In Progress)</li>
+                        <li><strong>BSc in Mathematics / Analytical Mathematics</strong> – Chuka University (2016 – 2021, Second Class Honours Upper Division)</li>
+                        <li><strong>KCSE Certificate</strong> – Kairi High School (Mean Grade: B)</li>
+                        <li><strong>Diplomas in German & French</strong> – Goethe-Institut & DELF/DALF Certified</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 text-sm mb-2 uppercase font-mono border-b border-slate-200 pb-1">Core Skills</h4>
+                    <p>Academic & Technical Research, Statistical Modeling (SPSS, SAS), Ghostwriting & Style Editing, APA 7th, MLA, Chicago Formatting, Quantitative Logic, Instructional Design & Pedagogy.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // 1. Initialize Icons
+        lucide.createIcons();
+
+        // 2. Bilingual Toggle
+        let isSwahili = false;
+        function toggleLanguage() {
+            isSwahili = !isSwahili;
+            const btn = document.getElementById('lang-toggle-btn');
+            const txt = document.getElementById('lang-text');
+            if (isSwahili) {
+                btn.innerText = 'English View';
+                txt.innerText = 'Karibu! Ukurasa wa Tafiti za Kiakademia na Hisabati za Brian Mbuthi — Kiingereza na Kiswahili';
+            } else {
+                btn.innerText = 'Swahili View';
+                txt.innerText = 'Welcome! Mambo vipi! Multilingual Academic & Quantitative Research Portfolio — English & Swahili';
+            }
+        }
+
+        // 3. Quantitative Chart.js Simulator
+        let sandboxChart;
+        function initChart() {
+            const ctxChart = document.getElementById('sandboxChart').getContext('2d');
+            sandboxChart = new Chart(ctxChart, {
+                type: 'line',
+                data: {
+                    labels: ['0m', '2m', '4m', '6m', '8m', '10m'],
+                    datasets: [{
+                        label: 'Temperature T(t) °C',
+                        data: [20, 46.37, 64.05, 75.90, 83.84, 89.17],
+                        borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.08)',
+                        borderWidth: 2,
+                        fill: true,
+                        pointBackgroundColor: '#0d9488'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', font: { family: 'Fira Code', size: 10 } } },
+                        y: { grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', font: { family: 'Fira Code', size: 10 } } }
+                    }
+                }
+            });
+        }
+        initChart();
+
+        function updateSimulation() {
+            const T0 = parseFloat(document.getElementById('capital-slider').value);
+            const k = parseFloat(document.getElementById('rate-slider').value);
+            const timeVal = parseInt(document.getElementById('years-slider').value);
+
+            document.getElementById('capital-val').innerText = `${T0}`;
+            document.getElementById('rate-val').innerText = `${k.toFixed(2)}`;
+            document.getElementById('years-val').innerText = `${timeVal}`;
+
+            const labels = [];
+            const data = [];
+            const stepTime = Math.max(1, Math.floor(timeVal / 5));
+
+            for (let i = 0; i <= timeVal; i += stepTime) {
+                labels.push(`${i}m`);
+                const val = 100 - (100 - T0) * Math.exp(-k * i);
+                data.push(parseFloat(val.toFixed(2)));
+            }
+
+            const finalVal = 100 - (100 - T0) * Math.exp(-k * timeVal);
+            const rateVal = (100 - T0) * k * Math.exp(-k * timeVal);
+
+            document.getElementById('final-result').innerText = `${finalVal.toFixed(2)} units`;
+            document.getElementById('rate-result').innerText = `${rateVal.toFixed(2)} units/min`;
+
+            sandboxChart.data.labels = labels;
+            sandboxChart.data.datasets[0].data = data;
+            sandboxChart.update();
+        }
+
+        document.getElementById('capital-slider').addEventListener('input', updateSimulation);
+        document.getElementById('rate-slider').addEventListener('input', updateSimulation);
+        document.getElementById('years-slider').addEventListener('input', updateSimulation);
+
+        // 4. Portfolio Filter Logic
+        function filterPortfolio(category) {
+            document.querySelectorAll('.port-filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-cat') === category) {
+                    btn.classList.add('bg-slate-900', 'text-white');
+                    btn.classList.remove('bg-slate-200', 'text-slate-700');
+                } else {
+                    btn.classList.remove('bg-slate-900', 'text-white');
+                    btn.classList.add('bg-slate-200', 'text-slate-700');
+                }
+            });
+
+            document.querySelectorAll('.portfolio-card').forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'grid';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 5. Admin / Live Editor Mode
+        let isEditMode = false;
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            document.body.classList.toggle('edit-active', isEditMode);
+            const toast = document.getElementById('editor-status-toast');
+            const exportBtn = document.getElementById('export-config-btn');
+
+            if (isEditMode) {
+                toast.classList.remove('hidden');
+                exportBtn.classList.remove('hidden');
+                document.querySelectorAll('[data-editable]').forEach(el => {
+                    el.contentEditable = "true";
+                });
+            } else {
+                toast.classList.add('hidden');
+                exportBtn.classList.add('hidden');
+                document.querySelectorAll('[data-editable]').forEach(el => {
+                    el.contentEditable = "false";
+                });
+            }
+        }
+
+        function exportConfig() {
+            const config = {};
+            document.querySelectorAll('[data-editable]').forEach(el => {
+                const key = el.getAttribute('data-editable');
+                config[key] = el.innerText.trim();
+            });
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "brian_mbuthi_portfolio_config.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // 6. Contact Form
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            alert("Thank you! Your message has been sent to Brian Mbuthi (mbuthibrian2@gmail.com).");
+            document.getElementById('contact-form').reset();
+        }
+
+        // 7. Modal
+        function openResumeModal() {
+            document.getElementById('resume-modal').classList.remove('hidden');
+        }
+        function closeResumeModal() {
+            document.getElementById('resume-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>

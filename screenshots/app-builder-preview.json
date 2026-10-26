@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Brian Mbuthi | Academic Researcher & Quantitative Analyst",
+      "hasCanvas": false,
+      "bodyTextLen": 9511,
+      "bodyTextHash": "d520668cdb9b3c9960a1f610de3c9581d7f245389aeba18447dab63d28171e64",
+      "bodyTextPrefix": "Skip to content Brian Mbuthi Quantitative analyst and academic s",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Brian Mbuthi | Academic Researcher & Quantitative Analyst",
+      "hasCanvas": false,
+      "bodyTextLen": 9390,
+      "bodyTextHash": "b74dd07027c832a66b897b078044bcea978d55ffbf487acdf3c81d90916d56da",
+      "bodyTextPrefix": "Skip to content Brian Mbuthi Quantitative analyst and academic s",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
